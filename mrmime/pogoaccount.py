@@ -1,10 +1,12 @@
 import hashlib
 import json
 import logging
+import pickle
 import random
 import time
 import traceback
 from threading import Lock
+from uuid import uuid4
 
 import requests
 from pgoapi import PGoApi
@@ -663,6 +665,12 @@ class POGOAccount(object):
                     self.rareless_scans += 1
                 else:
                     self.rareless_scans = 0
+
+            elif response_type == 'GET_HATCHED_EGGS':
+                dump_name = 'HATCHED_EGG-{}.pkl'.format(uuid4())
+                self.log_info("Hatched an egg. Dumped response to " + dump_name)
+                with open(dump_name, 'wb') as output:
+                    pickle.dump(response, output, 0)
 
     def _parse_inbox_response(self, response):
         vars = response.inbox.builtin_variables
